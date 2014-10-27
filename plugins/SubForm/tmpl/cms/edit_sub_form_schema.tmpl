@@ -1,0 +1,109 @@
+<mt:if name="id">
+    <mt:setvar name="page_title" value="<__trans phrase="Edit SubForm Schema">">
+<mt:else>
+    <mt:setvar name="page_title" value="<__trans phrase="Create SubForm Schema">">
+</mt:if>
+
+<$mt:setvar name="position_actions_bottom" value="1"$>
+
+<mt:SetVarBlock name="system_msg">
+<mt:if name="error">
+  <mtapp:statusmsg
+     id="generic-error"
+     class="error"
+     can_close="0">
+    <mt:var name="error">
+  </mtapp:statusmsg>
+</mt:if>
+<mt:if name="saved">
+  <mtapp:statusmsg
+     id="saved"
+     class="success">
+    <__trans phrase="Your changes have been saved.">
+  </mtapp:statusmsg>
+</mt:if>
+</mt:SetVarBlock>
+
+<mt:setvarblock name="jq_js_include" append="1">
+</mt:setvarblock>
+
+<mt:setvarblock name="html_head" append="1">
+<mt:include name="cms/sub_form_html_head.tmpl" component="SubForm">
+<style type="text/css">
+</style>
+</mt:setvarblock>
+
+<mt:setvar name="screen_group" value="custom_fields" />
+<mt:include name="include/header.tmpl" id="header_include">
+
+<form method="post" action="<mt:var name="script_url">" id="edit_sub_form_schema">
+  <input type="hidden" id="blog-id" name="blog_id" value="<mt:var name="blog_id" escape="html">" />
+  <input type="hidden" name="__mode" value="save" />
+  <input type="hidden" name="_type" value="<mt:var name="object_type">" />
+  <input type="hidden" name="id" value="<mt:var name="id" escape="html">" id="id" />
+  <input type="hidden" name="return_args" value="<mt:var name="return_args" escape="html">" />
+  <input type="hidden" name="magic_token" value="<mt:var name="magic_token">" />
+
+  <mtapp:settinggroup id="appned_grid_schema">
+
+    <mtapp:setting
+       id="label"
+       label_class="top-label"
+       label="<__trans phrase="Label">"
+       required="1">
+      <input type="text" name="name" id="name" class="text full required" maxlength="100" value="<mt:var name="name" escape="html">" />
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="description"
+       label_class="top-label"
+       label="<__trans phrase="Description">">
+       <textarea name="description" id="description" class="text low full" rows="5"><mt:var name="description" escape="html"></textarea>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="schema_head"
+       label_class="top-label"
+       label="<__trans phrase="Schema HTML Head">">
+       <textarea name="schema_head" id="schema_head" class="text high full" rows="5"><mt:var name="schema_head" escape="html"></textarea>
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="schema_html"
+       label_class="top-label"
+       label="<__trans phrase="Schema HTML">">
+         <textarea name="schema_html" id="schema_html" class="text high full" rows="5"><mt:var name="schema_html" escape="html"></textarea>
+    </mtapp:setting>
+
+    <mtapp:setting
+      id="schema_preview"
+      label_class="no-header"
+      label="<__trans phrase='Preview'>">
+        <mt:include name="cms/sub_form_preview_component.tmpl" component="SubForm" preview_bootup="return jQuery.mtSubForm.bootupSchemaPreview(this)">
+    </mtapp:setting>
+
+    <mtapp:setting
+       id="template"
+       label_class="top-label"
+       label="<__trans phrase="Template">"
+       show_hint="1"
+       hint="<__trans phrase="This is not required. Template to build SubForm data with mt:SubFormBuild tag.">">
+         <textarea name="template" id="template" class="text high full" rows="5"><mt:var name="template" escape="html"></textarea>
+    </mtapp:setting>
+
+  </mtapp:settinggroup>
+
+  <mt:setvarblock name="action_buttons">
+    <button
+       type="submit"
+       accesskey="s"
+       title="<__trans phrase="Save changes to this schema (s)">"
+       class="save action button primary"
+       ><__trans phrase="Save Changes"></button>
+  </mt:setvarblock>
+
+  <mt:include name="include/actions_bar.tmpl" bar_position="bottom" hide_pager="1" settings_bar="1">
+
+</form>
+
+<mt:include name="include/footer.tmpl">

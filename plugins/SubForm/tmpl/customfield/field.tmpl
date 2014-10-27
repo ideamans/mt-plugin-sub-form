@@ -1,0 +1,38 @@
+<mt:unless name="sub_form_included">
+    <mt:include name="cms/sub_form_html_head.tmpl" component="SubForm">
+
+    <script type="text/javascript">
+        (function($) {
+            $.mtSubForm.i18n = $.extend($.mtSubForm.i18n, {
+                'Select': '<__trans phrase="Select">',
+                'Remove': '<__trans phrase="Remove">'
+            });
+
+            $.mtSubForm.selectAssetUrlBase = "<mt:var name="script_url">?__mode=list_asset&amp;_type=asset&amp;blog_id=<mt:var name="blog_id">&amp;dialog_view=1&amp;asset_select=1";
+
+        })(jQuery);
+    </script>
+</mt:unless>
+
+<div class="sub-form-container" id="<mt:var name="field_id">-sub-form-container">
+    <textarea class="text high sub-form-values" name="<mt:var name="field_name" escape="html">" id="<mt:var name="field_id">"><mt:var name="field_value" escape="html" /></textarea>
+    <a href="#" class="get-values">Get Values</a>
+    <a href="#" class="set-values">Set Values</a>
+
+
+    <div class="sub-head" id="<mt:var name="field_id">-sub-form-head">
+    <mt:var name="schema_head" />
+    </div>
+
+    <div class="sub-form" id="<mt:var name="field_id">-sub-form">
+    <mt:var name="schema_html" />
+    </div>
+</div>
+
+<script>
+    (function($) {
+        $(function() {
+            $('#<mt:var name="field_id">-sub-form-container').subForm();
+        });
+    })(jQuery);
+</script>

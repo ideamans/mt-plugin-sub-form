@@ -1,0 +1,105 @@
+id: SubForm
+name: SubForm
+version: 0.1.0
+schema_version: 0.01
+l10n_class: MT::SubForm::L10N
+description: <__trans phrase="Adds subform type customfield by casual HTML code.">
+
+object_types:
+    sub_form_schema: MT::SubForm::Schema
+
+listing_screens:
+    sub_form_schema:
+        object_label: SubForm Schema
+        primary: name
+        default_sort_key: name
+        permission: administer_blog,edit_custom_fields
+        template: cms/list_sub_form_schema.tmpl
+
+list_properties:
+    sub_form_schema: $SubForm::MT::SubForm::Schema::list_props
+
+list_actions:
+    sub_form_schema:
+        delete:
+            label: Delete
+            code: $Core::MT::CMS::Common::delete
+            mode: delete
+            order: 100
+            js_message: delete
+            button: 1
+
+content_actions:
+    sub_form_schema:
+        create_new:
+            mode: view
+            args:
+                _type: sub_form_schema
+            class: icon-create
+            label: Create New
+            order: 100
+
+applications:
+    cms:
+        methods:
+            preview_sub_form: $SubForm::MT::SubForm::CMS::Schema::preview
+        callbacks:
+            template_param.asset_insert: $SubForm::MT::SubForm::CMS::Asset::asset_insert_param
+            template_param.edit_field: $SubForm::MT::SubForm::CustomFields::template_param_edit_field
+            cms_edit.sub_form_schema: $SubForm::MT::SubForm::CMS::Schema::edit
+            cms_save_filter.sub_form_schema: $SubForm::MT::SubForm::CMS::Schema::save_filter
+            cms_pre_save.sub_form_schema: $SubForm::MT::SubForm::CMS::Schema::pre_save
+        menus:
+                custom_fields:sub_form_schema:
+                    label: SubForm Schema
+                    order: 3000
+                    mode: list
+                    args:
+                        _type: sub_form_schema
+                    permit_action:
+                        permit_action: edit_custom_fields
+                        at_least_one: 1
+                    view:
+                        - system
+                        - website
+                        - blog
+
+tags:
+    block:
+        SubForm: $SubForm::MT::SubForm::Tags::hdlr_SubForm
+        SubFormColumns: $SubForm::MT::SubForm::Tags::hdlr_SubFormColumns
+        SubFormRows: $SubForm::MT::SubForm::Tags::hdlr_SubFormRows
+        SubFormRow: $SubForm::MT::SubForm::Tags::hdlr_SubFormRow
+        SubFormCellAsset: $SubForm::MT::SubForm::Tags::hdlr_SubFormCellAsset
+        SubFormHeader?: $SubForm::MT::SubForm::Tags::hdlr_SubFormHeader
+        SubFormFooter?: $SubForm::MT::SubForm::Tags::hdlr_SubFormFooter
+        IfSubFormCustomField?: $SubForm::MT::SubForm::Tags::hdlr_IfSubFormCustomField
+    function:
+        SubFormColumn: $SubForm::MT::SubForm::Tags::hdlr_SubFormColumn
+        SubFormCell: $SubForm::MT::SubForm::Tags::hdlr_SubFormCell
+        SubFormBuild: $SubForm::MT::SubForm::Tags::hdlr_SubFormBuild
+
+customfield_types:
+    sub_form_with_schema:
+        label: SubForm selected from schemas
+        column_def: vclob
+        no_default: 1
+        order: 3000
+        validate: $SubForm::MT::SubForm::CustomFields::sub_form_validate
+        field_html: |
+            <mt:Include name="tmpl/customfield/field.tmpl" component="SubForm" />
+        field_html_params: $SubForm::MT::SubForm::CustomFields::sub_form_schema_params
+        options_field: |
+            <mt:Include name="tmpl/customfield/schema_options.tmpl" component="SubForm" />
+
+    sub_form_with_html:
+        label: SubForm configured by HTML
+        column_def: vclob
+        no_default: 1
+        order: 3100
+        validate: $SubForm::MT::SubForm::CustomFields::sub_form_validate
+        field_html: |
+            <mt:Include name="tmpl/customfield/field.tmpl" component="SubForm" />
+        field_html_params: $SubForm::MT::SubForm::CustomFields::sub_form_html_params
+        options_field: |
+            <mt:Include name="tmpl/customfield/html_options.tmpl" component="SubForm" />
