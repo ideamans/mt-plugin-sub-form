@@ -48,6 +48,9 @@ use vars qw( %Lexicon );
     'No column definition named "[_1]".' => '"[_1]"というnameの列定義は存在しません。',
     'No column indexed [_1].' => 'インデックス[_1]の列定義は存在しません。',
 
+## tmpl/customfield/field.tmpl
+    'Show JSON' => 'JSONデータを表示',
+
 ## tmpl/sub_form_with_json
     'Append' => '追加',
     'Remove Last' => '最後を削除',
