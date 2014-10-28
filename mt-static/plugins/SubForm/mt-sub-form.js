@@ -1,58 +1,4 @@
 (function($) {
-    $.mtSubFormOld = {
-        safeSetupForm: function(args) {
-            try {
-                $.mtSubForm.setupForm(args);
-            } catch ( ex ) {
-                if ( console ) {
-                    console.log(ex);
-                } else {
-                    alert(ex.message || ex);
-                }
-            }
-        },
-        setupForm: function(args) {
-            var $form = args.form,
-                $input = args.input,
-                options = args.options,
-                forces = $.extend(args.forces, $.mtSubForm.forceOptions);
-
-            // Default options
-            var defaults = $.extend({
-                i18n: $.mtSubForm.i18n
-            }, $.mtSubForm.defaultOptions);
-
-            var opts = $.extend(defaults, options);
-
-            // Serialize on submit event
-            $form.closest('form').submit(function() {
-                var value = { values: [] };
-                var json = JSON.stringify(value);
-
-                try {
-                    var str = JSON.parse(json);
-                    if ( typeof str == 'string' ) { json = str; }
-                } catch (ex) {}
-
-                if ( $input )
-                    $input.val(json);
-
-                return true;
-            });
-
-            // Hide textarea
-            if ( $input )
-                $input.addClass('hidden');
-        },
-        defaultOptions: {},
-        forceOptions: {},
-        translate: function(phrase) {
-            return $.mtSubForm.i18n[phrase] || phrase;
-        },
-        selectAssetUrlBase: '',
-        i18n: {}
-    };
-
     $.mtSubForm = {
         stringify : function (obj) {
             var t = typeof (obj);
@@ -248,6 +194,7 @@
         defaults: {
             valuesSelector: '.sub-form-values',
             formSelector: '.sub-form',
+            jsonShowerSelector: '.sub-form-json-shower'
         },
         _init: function(options) {
             var opts = $.extend(this.defaults, $.mtSubForm.defaultOptions, options, $.mtSubForm.forceOptions),
@@ -256,6 +203,7 @@
 
             subform.jqValues = $subform.find(opts.valuesSelector);
             subform.jqForm = $subform.find(opts.formSelector);
+            subform.jqJsonShower = $subform.find(opts.jsonShowerSelector);
 
             subform.setUp();
 
@@ -277,6 +225,9 @@
                 subform.tearDown();
                 return true;
             });
+
+            subform.jqValues.addClass('hidden');
+            subform.jqJsonShower.removeClass('hidden');
         },
         formToJson: function() {
             var subform = this;

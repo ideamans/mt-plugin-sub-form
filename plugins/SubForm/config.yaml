@@ -67,16 +67,11 @@ applications:
 tags:
     block:
         SubForm: $SubForm::MT::SubForm::Tags::hdlr_SubForm
-        SubFormColumns: $SubForm::MT::SubForm::Tags::hdlr_SubFormColumns
-        SubFormRows: $SubForm::MT::SubForm::Tags::hdlr_SubFormRows
-        SubFormRow: $SubForm::MT::SubForm::Tags::hdlr_SubFormRow
-        SubFormCellAsset: $SubForm::MT::SubForm::Tags::hdlr_SubFormCellAsset
-        SubFormHeader?: $SubForm::MT::SubForm::Tags::hdlr_SubFormHeader
-        SubFormFooter?: $SubForm::MT::SubForm::Tags::hdlr_SubFormFooter
-        IfSubFormCustomField?: $SubForm::MT::SubForm::Tags::hdlr_IfSubFormCustomField
+        SubFormValues: $SubForm::MT::SubForm::Tags::hdlr_SubFormValues
+        SubFormAsset: $SubForm::MT::SubForm::Tags::hdlr_SubFormAsset
+        IfSubFormHas?: $SubForm::MT::SubForm::Tags::hdlr_IfSubFormHas
     function:
-        SubFormColumn: $SubForm::MT::SubForm::Tags::hdlr_SubFormColumn
-        SubFormCell: $SubForm::MT::SubForm::Tags::hdlr_SubFormCell
+        SubFormValue: $SubForm::MT::SubForm::Tags::hdlr_SubFormValue
         SubFormBuild: $SubForm::MT::SubForm::Tags::hdlr_SubFormBuild
 
 customfield_types:

@@ -8,50 +8,6 @@ use Data::Dumper;
 use MT::Util;
 use MT::SubForm::Util;
 
-sub _context_schema {
-    my ( $ctx, $args, $cond ) = @_;
-    my $blog = $ctx->stash('blog');
-    my $schema;
-
-    if ( $args->{schema} ) {
-        $schema = $args->{schema};
-    } elsif ( my $basename = $args->{basename} ) {
-        defined( $schema = lookup_schema_by_field($ctx, basename => $basename ) )
-            || return $ctx->error(plugin->translate('SubForm Customfield which basename is "[_1]" is not found.', $basename));
-    } elsif ( my $tag = $args->{tag} ) {
-        defined( $schema = lookup_schema_by_field($ctx, tag => $tag ) )
-            || return $ctx->error(plugin->translate('SubForm Customfield which tag is "[_1]" is not found.', $tag));
-    } elsif ( my $field = $ctx->stash('field') ) {
-        defined( $schema = lookup_schema_by_field($ctx, field => $field ) )
-            || return $ctx->error(plugin->translate('SubForm Customfield which basename is "[_1]" is not found.', $field->basename));
-    } elsif ( $ctx->stash('sub_form_schema') ) {
-        $schema = $ctx->stash('sub_form_schema');
-    } else {
-        return '';
-    }
-
-    if ( ref $schema eq '' ) {
-        # Parse as JSON
-        $schema = eval { MT::Util::from_json($schema) }
-            || return $ctx->error(plugin->translate('SubForm Customfield has no JSON hash schema.'));
-    }
-
-    return $ctx->error(plugin->translate('SubForm Customfield has no JSON hash schema.'))
-        if ref $schema ne 'HASH';
-
-    return $ctx->error(plugin->translate('SubForm Customfield has no columns array in schema.'))
-        if ref $schema->{columns} ne 'ARRAY';
-
-    foreach my $col ( @{$schema->{columns}} ) {
-        return $ctx->error(plugin->translate('SubForm has invalid column definision in columns.'))
-            if ref $col ne 'HASH';
-        return $ctx->error(plugin->translate('SubForm has column without name in column definition.'))
-            unless $col->{name};
-    }
-
-    $schema;
-}
-
 sub _context_data {
     my ( $ctx, $args, $cond ) = @_;
     my $data;
@@ -72,35 +28,48 @@ sub _context_data {
         $data = $ctx->tag( $tag, \%tag_args, $cond );
     } elsif ( $ctx->stash('sub_form_data') ) {
         $data = $ctx->stash('sub_form_data');
-    } elsif ( my $schema = $ctx->stash('sub_form_schema') ) {
-        $data = $schema->{initData};
     } else {
         return '';
     }
 
     if ( ref $data eq '' ) {
-        # Parse ad JSON
+        # Parse as JSON
         return '' if $data eq '';
         $data = eval { MT::Util::from_json($data) }
             || return $ctx->error(plugin->translate('SubForm data is not JSON format.'));
     }
 
-    return $ctx->error(plugin->translate('SubForm data is not an array of hash.'))
-        if ref $data ne 'ARRAY';
+    return $ctx->error(plugin->translate('SubForm data is not a hash.'))
+        if ref $data ne 'HASH';
 
-    foreach my $hash ( @$data ) {
-        return $ctx->error(plugin->translate('SubForm data is not an array of hash.'))
-             if ref $hash ne 'HASH';
+    foreach my $key ( keys %$data ) {
+        my $hash = $data->{$key};
+        return $ctx->error(plugin->translate('SubForm data is not a hash of an array.'))
+             if ref $hash ne 'ARRAY';
     }
 
     $data;
 }
 
-sub _require_context_schema {
+sub _context_schema {
     my ( $ctx, $args, $cond ) = @_;
-    defined( my $schema = _context_schema(@_) ) || return;
-    return $ctx->error(plugin->translate('No SubForm schema context. Set SubForm customfield basename as basename attribute of SubFormColumns or SubForm template tag.'))
-        unless $schema;
+    my $blog = $ctx->stash('blog');
+    my $schema;
+
+    if ( my $basename = $args->{basename} ) {
+        defined( $schema = lookup_schema_by_field($ctx, basename => $basename ) )
+            || return $ctx->error(plugin->translate('SubForm Customfield which basename is "[_1]" is not found.', $basename));
+    } elsif ( my $tag = $args->{tag} ) {
+        defined( $schema = lookup_schema_by_field($ctx, tag => $tag ) )
+            || return $ctx->error(plugin->translate('SubForm Customfield which tag is "[_1]" is not found.', $tag));
+    } elsif ( my $field = $ctx->stash('field') ) {
+        defined( $schema = lookup_schema_by_field($ctx, field => $field ) )
+            || return $ctx->error(plugin->translate('SubForm Customfield which basename is "[_1]" is not found.', $field->basename));
+    } elsif ( $ctx->stash('sub_form_schema') ) {
+        $schema = $ctx->stash('sub_form_schema');
+    } else {
+        return '';
+    }
 
     $schema;
 }
@@ -108,66 +77,54 @@ sub _require_context_schema {
 sub _require_context_data {
     my ( $ctx, $args, $cond ) = @_;
     defined( my $data = _context_data(@_) ) || return;
-    return $ctx->error(plugin->translate('No SubForm data context. Set SubForm tag as tag attribute or set JSON data as data attribute of SubFormRows, SubForm template tag.'))
+    return $ctx->error(plugin->translate('No SubForm data context. Set SubForm customfield tag as tag attribute.'))
         unless $data;
 
     $data;
 }
 
-sub _require_context_column {
-    my ( $ctx, $args, $cond ) = @_;
-    defined( my $schema = _require_context_schema(@_) ) || return;
-
-    my $col;
-    if ( $ctx->stash('sub_form_column') ) {
-        $col = $ctx->stash('sub_form_column');
-    } elsif ( my $name = ( $args->{col} || $args->{column} ) ) {
-        $col = ( grep { $_->{name} eq $name } @{$schema->{columns}} )[0]
-            || return $ctx->error(plugin->translate('No column definition named "[_1]".', $name));
-    } elsif ( defined ( my $index = $args->{index} ) ) {
-        $col = $schema->{columns}->[$index]
-            || return $ctx->error(plugin->translate('No column indexed [_1].', $name));
-    }
-
-    $col || return $ctx->error(plugin->translate('No SubForm column context. Set column, col or index attribute in [_1] or use [_1] tag inside mt:SubFormColumns.'), $ctx->stash('tag'));
-}
-
-sub _require_context_row {
-    my ( $ctx, $args, $cond ) = @_;
-    defined( my $data = _require_context_data(@_) ) || return;
-    return '' if ref $data ne 'ARRAY';
-
-    my $row;
-    if ( defined $args->{row} ) {
-        $row = $data->[int($args->{row})] || return '';
-    } elsif ( $ctx->stash('sub_form_row') ) {
-        $row = $ctx->stash('sub_form_row');
-    } else {
-        return $ctx->error(plugin->translate('No SubForm row context. Set index as row attribute of SubFormRow template tag or use in SubFormRows template tag.'));
-    }
-
-    return $ctx->error(plugin->translate('SubForm row is not a hash: [_1]', Dumper($row)))
-        unless ref $row eq 'HASH';
-
-    $row;
-}
-
-sub _require_context_cell {
+sub _require_context_values {
     my ( $ctx, $args ) = @_;
-    defined( my $row = _require_context_row(@_) ) || return;
-    return '' if ref $row ne 'HASH';
+    defined( my $data = _require_context_data(@_) ) || return;
+    return '' if ref $data ne 'HASH';
 
-    my $cell;
-    my $col;
-    if ( defined( $col = ( $args->{col} || $args->{column} ) ) ) {
-        $cell = $row->{$col};
-    } elsif ( $col = $ctx->stash('sub_form_column') ) {
-        $cell = $row->{$col->{name}};
+    my $name;
+    my $values;
+    if ( defined( $name = $args->{name} ) ) {
+        $values = $data->{$name};
+    } elsif ( $ctx->stash('sub_form_values') ) {
+        $values = $ctx->stash('sub_form_values');
     } else {
-        return $ctx->error(plugin->translate('Use mt:[_1] tag with col attribute or inside mt:SubFormColumns.', $ctx->stash('tag')));
+        return $ctx->error(plugin->translate('Use mt:[_1] tag with name attribute.', $ctx->stash('tag')));
     }
 
-    defined( $cell ) ? $cell : '';
+    defined( $values ) ? $values : '';
+}
+
+sub _require_context_hash {
+    my ( $ctx, $args ) = @_;
+    defined( my $values = _require_context_values(@_) ) || return;
+    return '' if ref $values ne 'ARRAY';
+
+    my $hash;
+    if ( $ctx->stash('sub_form_hash') ) {
+        $hash = $ctx->stash('sub_form_hash');
+    } else {
+        $hash = $values->[0];
+    }
+
+    defined( $hash ) ? $hash : '';
+}
+
+sub _require_context_value {
+    my ( $ctx, $args ) = @_;
+    defined( my $hash = _require_context_hash(@_) ) || return;
+    return '' if ref $hash ne 'HASH';
+
+    my $value;
+    my $key = $args->{key} || 'value';
+
+    $hash->{$key} || '';
 }
 
 sub _basic_loop {
@@ -196,11 +153,8 @@ sub _basic_loop {
 sub hdlr_SubForm {
     my ( $ctx, $args, $cond ) = @_;
 
-    my ( $schema, $data );
-    defined( $schema = _context_schema(@_) ) || return;
-    defined( $data = _context_data(@_) ) || return;
-
-    local $ctx->{__stash}->{sub_form_schema} = $schema;
+    my ( $data );
+    defined( $data = _require_context_data(@_) ) || return;
     local $ctx->{__stash}->{sub_form_data} = $data;
 
     my $builder = $ctx->stash('builder');
@@ -210,58 +164,52 @@ sub hdlr_SubForm {
     $partial;
 }
 
-sub hdlr_SubFormColumns {
+sub hdlr_SubFormValues {
     my ( $ctx, $args, $cond ) = @_;
+    defined( my $values = _require_context_values(@_) ) || return;
+    local $ctx->{__stash}{sub_form_values} = $values;
 
-    defined( my $schema = _require_context_schema(@_) ) || return;
-
-    local $ctx->{__stash}->{sub_form_schema} = $schema;
-    _basic_loop($schema->{columns}, 'sub_form_column', @_);
+    _basic_loop( $values, 'sub_form_hash', @_ );
 }
 
-sub hdlr_SubFormColumn {
+sub hdlr_SubFormValue {
     my ( $ctx, $args ) = @_;
-    defined( my $column = _require_context_column(@_) ) || return;
+    if ( defined( my $glue = $args->{glue} ) ) {
+        defined( my $values = _require_context_values(@_) ) || return;
+        return '' if ref $values ne 'ARRAY';
 
-    my $key = $args->{key} || $args->{attr}
-        || return $ctx->error(plugin->translate('mt:[_1] template tag requires at least one of [_2] as attributes.', $ctx->stash('tag'), 'key, attr'));
-
-    my $value = $column->{$key};
-    $value = '' unless defined $value;
-
-    $value;
+        my $key = $args->{key} || 'value';
+        return join($glue, map { $_->{$key} || '' } @$values );
+    } else {
+        defined( my $value = _require_context_value(@_) ) || return;
+        return $value;
+    }
 }
 
-sub hdlr_SubFormRows {
+sub hdlr_IfSubFormHas {
     my ( $ctx, $args, $cond ) = @_;
     defined( my $data = _require_context_data(@_) ) || return;
+    return 0 unless $data;
+    defined( my $values = _require_context_values(@_) ) || return;
+    return 0 unless $values;
 
-    local $ctx->{__stash}->{sub_form_data} = $data;
-    _basic_loop($data, 'sub_form_row', @_);
-}
+    my $key = $args->{key} || 'value';
+    my $eq = $args->{eq};
+    my $match;
 
-sub hdlr_SubFormRow {
-    my ( $ctx, $args, $cond ) = @_;
-    defined( my $row = _require_context_row($ctx, $args) ) || return;
+    if ( defined($eq) ) {
+        $match = grep { defined($_->{$key}) && $_->{$key} eq $eq } @$values;
+    } else {
+        $match = grep { defined($_->{$key}) } @$values;
+    }
 
-    local $ctx->{__stash}->{sub_form_row} = $row;
-    my $builder = $ctx->stash('builder');
-    my $tokens = $ctx->stash('tokens');
-    defined( my $partial = $builder->build($ctx, $tokens, $cond) ) || return;
-
-    $partial;
-}
-
-sub hdlr_SubFormCell {
-    my ( $ctx, $args ) = @_;
-    defined( my $cell = _require_context_cell($ctx, $args) ) || return;
-    $cell;
+    $match ? 1 : 0;
 }
 
 # Inspired from ContextHandlers.pm in Commercial.pack
-sub hdlr_SubFormCellAsset {
+sub hdlr_SubFormAsset {
     my ( $ctx, $args, $cond ) = @_;
-    defined( my $value = _require_context_cell($ctx, $args) ) || return;
+    defined( my $value = _require_context_value(@_) ) || return;
     return '' unless $value;
 
     my $tokens  = $ctx->stash('tokens');
@@ -288,36 +236,25 @@ sub hdlr_SubFormCellAsset {
     $res;
 }
 
-sub hdlr_SubFormHeader {
-    my ( $ctx, $args, $cond ) = @_;
-    $ctx->var('__first__');
-}
-
-sub hdlr_SubFormFooter {
-    my ( $ctx, $args, $cond ) = @_;
-    $ctx->var('__last__');
-}
-
-sub hdlr_IfSubFormCustomField {
-    my ( $ctx, $args, $cond ) = @_;
-    my $schema = _context_schema(@_);
-    $schema ? 1 : 0;
-}
-
 sub hdlr_SubFormBuild {
     my ( $ctx, $args ) = @_;
-    my ( $schema, $data );
+    my ( $schema );
 
-    local $ctx->{__stash}{sub_form_data} = $data = _context_data(@_) || return '';
-    local $ctx->{__stash}{sub_form_schema} = $schema = _context_schema(@_);
+    defined( my $data = _context_data(@_) ) || return;
+    return '' unless $data;
+    local $ctx->{__stash}{sub_form_data} = $data;
+
+    defined( $schema = _context_schema(@_) ) || return;
+    local $ctx->{__stash}{sub_form_schema} = $schema;
 
     if ( $args->{module} || $args->{widget} || $args->{name} || $args->{file} || $args->{identifier} ) {
         return $ctx->invoke_handler('include', $args );
-    } elsif ( $schema && $schema->{mtTemplate} ) {
+    } elsif ( $schema ) {
         my $builder = $ctx->stash('builder');
-        my $tokens = $builder->compile($ctx, $schema->{mtTemplate});
+        my $tokens = $builder->compile($ctx, $schema->template);
         defined( my $res = $builder->build($ctx, $tokens) )
             || return $ctx->error($builder->errstr);
+
         return $res;
     }
 

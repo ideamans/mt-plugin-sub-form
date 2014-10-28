@@ -28,18 +28,15 @@ use vars qw( %Lexicon );
 ## lib/MT/SubForm/Tag.pm
     'SubForm Customfield which basename is "[_1]" is not found.' => '"[_1]"というベースネームのカスタムフィールドは存在しません。',
     'SubForm Customfield which tag is "[_1]" is not found.' => '"[_1]"というタグ名のカスタムフィールドは存在しません。',
-    'SubForm Customfield has no JSON hash schema.' => 'SubFormのスキーマがJSON形式ではないか、ハッシュデータではありません。',
-    'SubForm Customfield has no columns array in schema.' => 'SubFormのスキーマにcolumns配列がありません。',
-    'SubForm has invalid column definision in columns.' => 'SubFormのスキーマの列定義にハッシュではない列が含まれています。',
-    'SubForm has column without name in column definition.' => 'SubFormのスキーマの列定義にname値を持たない列が含まれています。',
     'SubForm data is not JSON format.' => 'SubFormデータがJSON形式ではありません。',
-    'SubForm data is not an array of hash.' => 'SubFormデータがハッシュ配列ではありません。',
-    'Use mt:[_1] tag with col attribute or inside mt:SubFormColumns.'
-        => 'mt:[_1]テンプレートタグは、colまたはcolumn属性を指定するか、mt:SubFormColumnsテンプレートタグの内部で使用してください。',
+    'SubForm data is not a hash.' => 'SubFormデータがハッシュではありません。',
+    'SubForm data is not a hash of an array.' => 'SubFormデータが配列のハッシュではありません。',
+    'Use mt:[_1] tag with name attribute.'
+        => 'mt:[_1]テンプレートタグには、name属性を指定してください。',
     'No SubForm schema context. Set SubForm customfield basename as basename attribute of SubFormColumns or SubForm template tag.'
         => 'SubFormスキーマがコンテキストにありません。mt:SubFormColumnsまたは上位のmt:SubFormテンプレートタグにbasename属性としてSubFormカスタムフィールドのベースネームを指定してください。',
-    'No SubForm data context. Set SubForm tag as tag attribute or set JSON data as data attribute of SubFormRows, SubForm template tag.'
-        => 'SubFormデータがコンテキストにありません。mt:SubFormrow(s)または上位のmt:SubFormテンプレートタグにtag属性としてカスタムフィールドタグを指定するか、data属性としてJSONデータを指定してください。',
+    'No SubForm data context. Set SubForm customfield tag as tag attribute.'
+        => 'SubFormデータがコンテキストにありません。tag属性としてSutFormカスタムフィールドのタグ名を指定してください。',
     '[_1] template tag requires [_2] attribute.' => '[_1]テンプレートタグには[_2]属性が必要です。',
     'No SubForm row context. Set index as row attribute of SubFormRow template tag or use in SubFormRows template tag.'
         => 'SubForm行データがコンテキストにありません。mt:SubFormRowにrow属性として行インデックスを指定するか、SubFormRowsテンプレートタグの内部で使用してください。',
@@ -47,6 +44,9 @@ use vars qw( %Lexicon );
     'mt:[_1] template tag requires at least one of [_2] as attributes.' => 'mt:[_1]テンプレートタグは、[_2]のいずれかの属性が必要です。',
     'No column definition named "[_1]".' => '"[_1]"というnameの列定義は存在しません。',
     'No column indexed [_1].' => 'インデックス[_1]の列定義は存在しません。',
+
+## tmpl/customfield/field.tmpl
+    'Show JSON' => 'JSONデータを表示',
 
 ## tmpl/sub_form_with_json
     'Append' => '追加',
