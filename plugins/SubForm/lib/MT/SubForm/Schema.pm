@@ -53,7 +53,7 @@ sub list_props {
                 my ( $prop, $obj, $app ) = @_;
                 return $app->uri(
                     mode => 'view',
-                    args => { _type => 'sub_form_schema', blog_id => $obj->id, id => $obj->id },
+                    args => { _type => 'sub_form_schema', blog_id => $obj->blog_id, id => $obj->id },
                 );
             },
         },
