@@ -104,7 +104,7 @@
             // Build image preview
             if ( $enclosure.hasClass('mt-enclosure-image') ) {
                 var $anchor = $enclosure.find('a'),
-                    $img = $('<img />').css({'max-width': '160px', 'max-height': '160px'});
+                    $img = $('<img />').css({'max-width': '100%'});
                 $img.attr('src', $anchor.attr('href'));
                 $anchor.html('').append($img);
             }
