@@ -4,10 +4,22 @@ use strict;
 use warnings;
 use MT::SubForm::Util;
 
+sub _check_permission {
+    my ( $app ) = @_;
+
+    return 0 unless $app->user;
+
+    if ( $app->permissions ) {
+        $app->permissions->can_do('edit_custom_fields');
+    } else {
+        $app->user->is_superuser;
+    }
+}
+
 sub edit {
     my ( $cb, $app, $id, $obj, $param ) = @_;
     return $app->permission_denied
-        unless $app->permissions->can_do('edit_custom_fields');
+        unless _check_permission($app);
 
     my $blog_id = $app->can('blog') && $app->blog ? $app->blog->id : 0;
     $param->{sub_form_preview_url} = $app->uri(
@@ -30,7 +42,7 @@ sub edit {
 sub preview {
     my ( $app ) = @_;
     return $app->permission_denied
-        unless $app->permissions->can_do('edit_custom_fields');
+        unless _check_permission($app);
 
     my $schema = MT->model('sub_form_schema')->new;
     $schema->set_values({
@@ -51,7 +63,7 @@ sub preview {
 sub save_filter {
     my ( $cb, $app ) = @_;
     return $app->permission_denied
-        unless $app->permissions->can_do('edit_custom_fields');
+        unless _check_permission($app);
 
     my %values = $app->param_hash;
 
@@ -69,7 +81,7 @@ sub save_filter {
 sub pre_save {
     my ( $cb, $app, $obj ) = @_;
     return $app->permission_denied
-        unless $app->permissions->can_do('edit_custom_fields');
+        unless _check_permission($app);
 
     1;
 }

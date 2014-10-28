@@ -286,7 +286,7 @@
             });
         },
         tearDown: function() {
-            this.jqForm.children().remove();
+            // this.jqForm.children().remove();
         },
         setValues: function(values) {
             var subform = this;

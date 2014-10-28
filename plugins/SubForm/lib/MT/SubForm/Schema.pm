@@ -3,7 +3,7 @@ package MT::SubForm::Schema;
 use strict;
 use base qw( MT::Object );
 
-use MT::Util;
+use MT::Util qw(encode_html);
 use MT::Util::YAML;
 use MT::SubForm::Util;
 
