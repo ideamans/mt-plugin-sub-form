@@ -54,6 +54,7 @@ sub test_template {
     my $builder = MT::Builder->new;
 
     $ctx->stash('sub_form_data', $args{data}) if $args{data};
+    $ctx->stash('sub_form_schema', $args{schema}) if $args{schema};
 
     my $tokens = $builder->compile($ctx, $args{template}) or die $ctx->errstr || 'Feild to compile.';
     defined ( my $result = $builder->build($ctx, $tokens) )
@@ -68,14 +69,86 @@ sub test_template {
 sub template_basic {
     my %args;
     $args{template} = <<'EOT';
+<mt:SubForm>
+    text: <mt:SubFormValue name="text">
+    single: <mt:SubFormValue name="single" key="label">
+    multiple: <mt:SubFormValue name="multiple" glue=",">
+    multiple: <mt:SubFormValue name="multiple" key="label" glue=",">
+    multiple: <mt:SubFormValues name="multiple">[<mt:SubFormValue />]</mt:SubFormValues>
+    multiple: <mt:SubFormValues name="multiple">[<mt:SubFormValue key="label" />]</mt:SubFormValues>
+    multiple: <mt:IfSubFormHas name="multiple" eq="1">has 1</mt:IfSubFormHas>
+    multiple: <mt:IfSubFormHas name="multiple" key="label" eq="OPTION1">has OPTION1</mt:IfSubFormHas>
+    multiple: <mt:IfSubFormHas name="multiple" eq="3">has 3</mt:IfSubFormHas>
+    multiple: <mt:IfSubFormHas name="multiple" key="label" eq="OPTION3">has OPTION3</mt:IfSubFormHas>
+    nothing: <mt:IfSubFormHas name="mothing">has nothing</mt:IfSubFormHas>
+</mt:SubForm>
 EOT
 
-    $args{data} = [
-        { column1 => 'VALUE1-1', column2 => 'VALUE1-2', column3 => 'VALUE1-3' },
-        { column1 => 'VALUE2-1', column2 => 'VALUE2-2', column3 => 'VALUE2-3' },
-    ];
+    $args{data} = {
+        text => [ { value => 'TEXT1' } ],
+        multiple => [ { value => '1', label => 'OPTION1' }, { value => '2', label => 'OPTION2' } ],
+        single => [ { value => '3', label => 'OPTION3' } ],
+    };
 
     $args{expect} = <<'EOH';
+    text: TEXT1
+    single: OPTION3
+    multiple: 1,2
+    multiple: OPTION1,OPTION2
+    multiple: [1][2]
+    multiple: [OPTION1][OPTION2]
+    multiple: has 1
+    multiple: has OPTION1
+    multiple: 
+    multiple: 
+    nothing: 
+EOH
+
+    test_template(%args);
+}
+
+sub template_schema {
+    my %args;
+
+    $args{schema} = MT->model('sub_form_schema')->new;
+    $args{schema}->template(<<'EOT');
+<mt:SubForm>
+    text: <mt:SubFormValue name="text">
+    single: <mt:SubFormValue name="single" key="label">
+    multiple: <mt:SubFormValue name="multiple" glue=",">
+    multiple: <mt:SubFormValue name="multiple" key="label" glue=",">
+    multiple: <mt:SubFormValues name="multiple">[<mt:SubFormValue />]</mt:SubFormValues>
+    multiple: <mt:SubFormValues name="multiple">[<mt:SubFormValue key="label" />]</mt:SubFormValues>
+    multiple: <mt:IfSubFormHas name="multiple" eq="1">has 1</mt:IfSubFormHas>
+    multiple: <mt:IfSubFormHas name="multiple" key="label" eq="OPTION1">has OPTION1</mt:IfSubFormHas>
+    multiple: <mt:IfSubFormHas name="multiple" eq="3">has 3</mt:IfSubFormHas>
+    multiple: <mt:IfSubFormHas name="multiple" key="label" eq="OPTION3">has OPTION3</mt:IfSubFormHas>
+    nothing: <mt:IfSubFormHas name="mothing">has nothing</mt:IfSubFormHas>
+</mt:SubForm>
+EOT
+
+    $args{template} = <<'EOT';
+<mt:SubFormBuild>
+EOT
+
+    $args{data} = {
+        text => [ { value => 'TEXT1' } ],
+        multiple => [ { value => '1', label => 'OPTION1' }, { value => '2', label => 'OPTION2' } ],
+        single => [ { value => '3', label => 'OPTION3' } ],
+    };
+
+    $args{expect} = <<'EOH';
+    text: TEXT1
+    single: OPTION3
+    multiple: 1,2
+    multiple: OPTION1,OPTION2
+    multiple: [1][2]
+    multiple: [OPTION1][OPTION2]
+    multiple: has 1
+    multiple: has OPTION1
+    multiple: 
+    multiple: 
+    nothing: 
 EOH
 
     test_template(%args);
@@ -89,6 +162,7 @@ sub main {
 
     uses;
     template_basic;
+    template_schema;
 }
 
 __PACKAGE__->main() unless caller;

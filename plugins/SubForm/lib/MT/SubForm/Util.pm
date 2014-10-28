@@ -36,18 +36,12 @@ sub lookup_schema_by_field {
 
     return unless $field;
 
+    my $schema;
     if ( $field->type eq 'sub_form_with_schema' ) {
-        my $schema = MT->model('sub_form_schema')->load($field->options || 0)
-            || return;
-
-        my $hash = $schema->schema_hash;
-        $hash->{mtTemplate} ||= $schema->template;
-        return $hash;
-    } elsif ( $field->type =~ /_yaml$/ ) {
-        return yaml2hash($field->options);
-    } elsif ( $field->type =~ /_json$/ ) {
-        return json2hash($field->options);
+        $schema = MT->model('sub_form_schema')->load($field->options || 0);
     }
+
+    $schema;
 }
 
 1;
