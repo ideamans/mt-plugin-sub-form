@@ -51,9 +51,17 @@ sub preview {
     });
 
     if ( $schema->validate ) {
+        my $built_schema_head = $schema->build_schema_head;
+        return $app->json_error($schema->errstr) unless defined $built_schema_head;
+
+        my $built_schema_html = $schema->build_schema_html;
+        return $app->json_error($schema->errstr) unless defined $built_schema_html;
+
         $app->json_result({
             schema_head => $schema->schema_head,
             schema_html => $schema->schema_html,
+            built_schema_head => $built_schema_head,
+            built_schema_html => $built_schema_html,
         });
     } else {
         $app->json_error($schema->errstr);

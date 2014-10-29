@@ -78,14 +78,31 @@
                 $head.children().remove();
                 $formWrapper.hide();
                 $error.hide();
-
-                // Not Ajax
-                // $indicator.fadeIn('fast');
+                $indicator.fadeIn('fast');
 
                 var data = opts.getter();
-                $head.html(data.schema_head);
-                $form.html(data.schema_html);
-                $formWrapper.fadeIn('fast');
+
+                $.post(opts.previewUrl, data)
+                    .done(function(data) {
+                        if ( data.error ) {
+                            $error.show().find('p.msg-text').text(data.error);
+                        } else if ( data.result && data.result ) {
+                            try {
+                              $head.html(data.result.built_schema_head);
+                              $form.html(data.result.built_schema_html);
+                              $formWrapper.fadeIn('fast');
+                            } catch (ex) {
+                              if ( console ) console.log(ex);
+                              $error.show().find('p.msg-text').text(ex.message);
+                            }
+                        }
+                    })
+                    .fail(function(status, line, jqXHR) {
+                        $error.show().find('p.msg-text').text(status + " " + line);
+                    })
+                    .always(function() {
+                        $indicator.hide();
+                    });
             };
 
             $button.click(updatePreview);
