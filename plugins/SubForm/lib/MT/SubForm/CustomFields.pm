@@ -9,6 +9,7 @@ sub _common_field_html_param {
     my ( $tmpl_param ) = @_;
 
     $tmpl_param->{plugin_version} = plugin->{version};
+    $tmpl_param->{debug_mode} = $MT::DebugMode;
 
     # Including css, js?
     my $cache = MT::Request->instance->cache('sub_form') || {};

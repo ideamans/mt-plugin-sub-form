@@ -13,7 +13,7 @@
                     v = obj[n];
                     t = typeof(v);
                     if (obj.hasOwnProperty(n)) {
-                        if (t == "string") v = '"' + v.replace(/"/g, '\\"').replace(/\n/g, 'n') + '"'; else if (t == "object" && v !== null) v = $.mtSubForm.stringify(v);
+                        if (t == "string") v = '"' + v.replace(/"/g, '\\"').replace(/\n/g, '\\n').replace(/\t/g, '\\t') + '"'; else if (t == "object" && v !== null) v = $.mtSubForm.stringify(v);
                         json.push((arr ? "" : '"' + n + '":') + String(v));
                     }
                 }
@@ -192,6 +192,7 @@
 
     $.widget('mt.subForm', {
         defaults: {
+            valuesWrapperSelector: '.sub-form-values-wrapper',
             valuesSelector: '.sub-form-values',
             formSelector: '.sub-form',
             jsonShowerSelector: '.sub-form-json-shower'
@@ -201,6 +202,7 @@
                 subform = this,
                 $subform = $(this.element);
 
+            subform.jqValuesWrapper = $subform.find(opts.valuesWrapperSelector);
             subform.jqValues = $subform.find(opts.valuesSelector);
             subform.jqForm = $subform.find(opts.formSelector);
             subform.jqJsonShower = $subform.find(opts.jsonShowerSelector);
@@ -209,6 +211,12 @@
 
             var values = subform.parseValues(subform.jqValues.val());
             subform.setValues(values);
+
+            subform.jqJsonShower.click(function() {
+                subform.jqJsonShower.addClass('hidden');
+                subform.jqValuesWrapper.removeClass('hidden');
+                return false;
+            });
 
             $subform.find('.get-values').click(function() {
                 subform.formToJson();
@@ -226,7 +234,7 @@
                 return true;
             });
 
-            subform.jqValues.addClass('hidden');
+            subform.jqValuesWrapper.addClass('hidden');
             subform.jqJsonShower.removeClass('hidden');
         },
         formToJson: function() {
