@@ -9,6 +9,8 @@ sub _common_field_html_param {
     my ( $tmpl_param ) = @_;
 
     $tmpl_param->{plugin_version} = plugin->{version};
+    $tmpl_param->{debug_mode} = $MT::DebugMode;
+    $tmpl_param->{build_error} = undef;
 
     # Including css, js?
     my $cache = MT::Request->instance->cache('sub_form') || {};
@@ -48,8 +50,13 @@ sub sub_form_schema_params {
     if ( $tmpl_key eq 'field_html' ) {
         _common_field_html_param($tmpl_param);
         if ( my $schema = MT->model('sub_form_schema')->load($tmpl_param->{options} || 0) ) {
-            $tmpl_param->{schema_head} = $schema->schema_head;
-            $tmpl_param->{schema_html} = $schema->schema_html;
+            $tmpl_param->{built_schema_head} = $schema->build_schema_head;
+            $tmpl_param->{build_error} = $schema->errstr
+                unless defined $tmpl_param->{built_schema_head};
+
+            $tmpl_param->{built_schema_html} = $schema->build_schema_html;
+            $tmpl_param->{build_error} = $schema->errstr
+                unless defined $tmpl_param->{built_schema_html};
         }
     } elsif ( $tmpl_key eq 'options_field' ) {
         my $app = MT->instance;
