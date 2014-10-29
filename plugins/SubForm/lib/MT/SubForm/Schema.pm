@@ -38,6 +38,33 @@ sub class_label_plural {
 
 sub validate { 1 }
 
+sub _build_template {
+    my $self = shift;
+    my ( $template ) = @_;
+
+    require MT::Builder;
+    require MT::Template::Context;
+    my $ctx = MT::Template::Context->new;
+    my $builder = MT::Builder->new;
+
+    my $tokens = $builder->compile($ctx, $template)
+        || return $self->error($builder->errstr || 'Feild to compile.');
+    defined ( my $result = $builder->build($ctx, $tokens) )
+        || return $self->error($builder->errstr || 'Failed to build.');
+
+    $result;
+}
+
+sub build_schema_head {
+    my $self = shift;
+    $self->_build_template($self->schema_head);
+}
+
+sub build_schema_html {
+    my $self = shift;
+    $self->_build_template($self->schema_html);
+}
+
 sub list_props {
     return {
         id => {
@@ -53,7 +80,7 @@ sub list_props {
                 my ( $prop, $obj, $app ) = @_;
                 return $app->uri(
                     mode => 'view',
-                    args => { _type => 'sub_form_schema', blog_id => $obj->id, id => $obj->id },
+                    args => { _type => 'sub_form_schema', blog_id => $obj->blog_id, id => $obj->id },
                 );
             },
         },

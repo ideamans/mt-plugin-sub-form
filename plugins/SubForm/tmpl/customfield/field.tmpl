@@ -15,33 +15,40 @@
 </mt:unless>
 
 <div class="sub-form-container" id="<mt:var name="field_id">-sub-form-container">
+    <mt:if name="build_error">
+    <mtapp:statusmsg
+       id="generic-error"
+       class="error"
+       can_close="0">
+         <mt:var name="build_error">
+    </mtapp:statusmsg>
+    </mt:if>
+
     <div class="hidden sub-form-json-shower" id="<mt:var name="field_id">-show-json" style="float: right"><a href="#<mt:var name="field_id">"><__trans phrase="Show JSON"></a></div>
 
-    <textarea class="text high sub-form-values" name="<mt:var name="field_name" escape="html">" id="<mt:var name="field_id">"><mt:var name="field_value" escape="html" /></textarea>
+    <div class="sub-form-values-wrapper">
+        <textarea class="text high sub-form-values" name="<mt:var name="field_name" escape="html">" id="<mt:var name="field_id">"><mt:var name="field_value" escape="html" /></textarea>
 
-    <mt:ignore>
-    <a href="#" class="get-values">Get Values</a>
-    <a href="#" class="set-values">Set Values</a>
-    </mt:ignore>
+        <mt:if name="debug_mode">
+        <div>
+            <a href="#" class="get-values">Get Values</a>
+            <a href="#" class="set-values">Set Values</a>
+        </div>
+        </mt:if>
+    </div>
 
     <div class="sub-head" id="<mt:var name="field_id">-sub-form-head">
-    <mt:var name="schema_head" />
+    <mt:var name="built_schema_head" />
     </div>
 
     <div class="sub-form" id="<mt:var name="field_id">-sub-form">
-    <mt:var name="schema_html" />
+    <mt:var name="built_schema_html" />
     </div>
 </div>
 
 <script>
     (function($) {
         $(function() {
-            $('#<mt:var name="field_id" />-show-json a').click(function() {
-                $(this).addClass('hidden');
-                $($(this).attr('href')).removeClass('hidden');
-                return false;
-            });
-
             $('#<mt:var name="field_id">-sub-form-container').subForm();
         });
     })(jQuery);

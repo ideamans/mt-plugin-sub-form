@@ -13,7 +13,7 @@
                     v = obj[n];
                     t = typeof(v);
                     if (obj.hasOwnProperty(n)) {
-                        if (t == "string") v = '"' + v.replace(/"/g, '\\"').replace(/\n/g, 'n') + '"'; else if (t == "object" && v !== null) v = $.mtSubForm.stringify(v);
+                        if (t == "string") v = '"' + v.replace(/"/g, '\\"').replace(/\n/g, '\\n').replace(/\t/g, '\\t') + '"'; else if (t == "object" && v !== null) v = $.mtSubForm.stringify(v);
                         json.push((arr ? "" : '"' + n + '":') + String(v));
                     }
                 }
@@ -78,14 +78,31 @@
                 $head.children().remove();
                 $formWrapper.hide();
                 $error.hide();
-
-                // Not Ajax
-                // $indicator.fadeIn('fast');
+                $indicator.fadeIn('fast');
 
                 var data = opts.getter();
-                $head.html(data.schema_head);
-                $form.html(data.schema_html);
-                $formWrapper.fadeIn('fast');
+
+                $.post(opts.previewUrl, data)
+                    .done(function(data) {
+                        if ( data.error ) {
+                            $error.show().find('p.msg-text').text(data.error);
+                        } else if ( data.result && data.result ) {
+                            try {
+                              $head.html(data.result.built_schema_head);
+                              $form.html(data.result.built_schema_html);
+                              $formWrapper.fadeIn('fast');
+                            } catch (ex) {
+                              if ( console ) console.log(ex);
+                              $error.show().find('p.msg-text').text(ex.message);
+                            }
+                        }
+                    })
+                    .fail(function(status, line, jqXHR) {
+                        $error.show().find('p.msg-text').text(status + " " + line);
+                    })
+                    .always(function() {
+                        $indicator.hide();
+                    });
             };
 
             $button.click(updatePreview);
@@ -104,7 +121,7 @@
             // Build image preview
             if ( $enclosure.hasClass('mt-enclosure-image') ) {
                 var $anchor = $enclosure.find('a'),
-                    $img = $('<img />').css({'max-width': '160px', 'max-height': '160px'});
+                    $img = $('<img />').css({'max-width': '100%'});
                 $img.attr('src', $anchor.attr('href'));
                 $anchor.html('').append($img);
             }
@@ -192,6 +209,7 @@
 
     $.widget('mt.subForm', {
         defaults: {
+            valuesWrapperSelector: '.sub-form-values-wrapper',
             valuesSelector: '.sub-form-values',
             formSelector: '.sub-form',
             jsonShowerSelector: '.sub-form-json-shower'
@@ -201,6 +219,7 @@
                 subform = this,
                 $subform = $(this.element);
 
+            subform.jqValuesWrapper = $subform.find(opts.valuesWrapperSelector);
             subform.jqValues = $subform.find(opts.valuesSelector);
             subform.jqForm = $subform.find(opts.formSelector);
             subform.jqJsonShower = $subform.find(opts.jsonShowerSelector);
@@ -209,6 +228,12 @@
 
             var values = subform.parseValues(subform.jqValues.val());
             subform.setValues(values);
+
+            subform.jqJsonShower.click(function() {
+                subform.jqJsonShower.addClass('hidden');
+                subform.jqValuesWrapper.removeClass('hidden');
+                return false;
+            });
 
             $subform.find('.get-values').click(function() {
                 subform.formToJson();
@@ -226,7 +251,7 @@
                 return true;
             });
 
-            subform.jqValues.addClass('hidden');
+            subform.jqValuesWrapper.addClass('hidden');
             subform.jqJsonShower.removeClass('hidden');
         },
         formToJson: function() {
