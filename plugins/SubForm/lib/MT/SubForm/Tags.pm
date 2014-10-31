@@ -91,6 +91,8 @@ sub _require_context_values {
     my $name;
     my $values;
     if ( defined( $name = $args->{name} ) ) {
+        $name = $args->{prefix} . $name if defined($args->{prefix});
+        $name .= $args->{suffix} if defined($args->{suffix});
         $values = $data->{$name};
     } elsif ( $ctx->stash('sub_form_values') ) {
         $values = $ctx->stash('sub_form_values');
