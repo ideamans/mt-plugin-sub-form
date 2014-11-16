@@ -1,5 +1,9 @@
-<mt:unless name="sub_form_included">
+<mt:unless name="sub_form_head">
     <mt:include name="cms/sub_form_html_head.tmpl" component="SubForm">
+
+    <link rel="stylesheet" type="text/css" href="<mt:StaticWebPath>plugins/SubForm/vendor/jQuery-Validation-Engine/css/validationEngine.jquery.css">
+    <script src="<mt:StaticWebPath>plugins/SubForm/vendor/jQuery-Validation-Engine/js/jquery.validationEngine.js"></script>
+    <script src="<mt:StaticWebPath>plugins/SubForm/vendor/jQuery-Validation-Engine/js/languages/jquery.validationEngine-<mt:var name='sub_form_lang'>.js"></script>
 
     <script type="text/javascript">
         (function($) {
@@ -12,9 +16,29 @@
 
         })(jQuery);
     </script>
+
+    <style type="text/css">
+        .sub-form-controll {
+            position: relative;
+            float: right;
+            margin-top: -30px;
+        }
+
+        .sub-form-exchange {
+            margin-top: 8px;
+        }
+
+        .icon-up { background-image: url(<mt:StaticWebPath>images/status_icons/up.gif); }
+        .icon-down { background-image: url(<mt:StaticWebPath>images/status_icons/download.gif); }
+
+        .sub-form-mode-json .hidden-on-json { display: none; }
+        .sub-form-mode-live .hidden-on-live { display: none; }
+    </style>
+
+    <mt:setvar name="sub_form_head" value="1">
 </mt:unless>
 
-<div class="sub-form-container" id="<mt:var name="field_id">-sub-form-container">
+<div class="sub-form-container sub-form-mode-live" id="<mt:var name="field_id">-sub-form-container">
     <mt:if name="build_error">
     <mtapp:statusmsg
        id="generic-error"
@@ -24,24 +48,28 @@
     </mtapp:statusmsg>
     </mt:if>
 
-    <div class="hidden sub-form-json-shower" id="<mt:var name="field_id">-show-json" style="float: right"><a href="#<mt:var name="field_id">"><__trans phrase="Show JSON"></a></div>
+    <div class="sub-form-controll">
+        <a href="javascript:void(0)" class="sub-form-show-json hidden-on-json"><__trans phrase="Show JSON"></a>
+        <a href="javascript:void(0)" class="sub-form-hide-json hidden-on-live"><__trans phrase="Hide JSON"></a>
+    </div>
 
-    <div class="sub-form-values-wrapper">
+    <div class="sub-form-values-wrapper hidden-on-live">
+        <h4><__trans phrase="JSON Data"></h4>
         <textarea class="text high sub-form-values" name="<mt:var name="field_name" escape="html">" id="<mt:var name="field_id">"><mt:var name="field_value" escape="html" /></textarea>
-
-        <mt:if name="debug_mode">
-        <div>
-            <a href="#" class="get-values">Get Values</a>
-            <a href="#" class="set-values">Set Values</a>
+        <div class="hint"><__trans phrase="To update values of SubForm, paste JSON and press SubForm to JSON."></div>
+        <div class="sub-form-exchange actions-bar actions-bar-bottom line">
+        <a href="#" class="button sub-form-get-json"><span class="icon-left icon-up"><__trans phrase="SubForm to JSON"></span></a>
+            <a href="#" class="button sub-form-set-json"><span class="icon-left icon-down"><__trans phrase="JSON to SubForm"></span></a>
         </div>
-        </mt:if>
+
+        <h4><__trans phrase="SubForm"></h4>
     </div>
 
     <div class="sub-head" id="<mt:var name="field_id">-sub-form-head">
     <mt:var name="built_schema_head" />
     </div>
 
-    <div class="sub-form" id="<mt:var name="field_id">-sub-form">
+    <div class="sub-form validationEngineContainer" id="<mt:var name="field_id">-sub-form">
     <mt:var name="built_schema_html" />
     </div>
 </div>
@@ -49,7 +77,13 @@
 <script>
     (function($) {
         $(function() {
-            $('#<mt:var name="field_id">-sub-form-container').subForm();
+            var $subform = $('#<mt:var name="field_id">-sub-form-container');
+            var $validationEngine = $subform.find('.validationEngineContainer').validationEngine();
+            // $subform.closest('form').submit(function() {
+            //     if ( !$validationEngine.validationEngine('validate') ) return false;
+            // });
+            $validationEngine.validationEngine('validate');
+            $subform.subForm($.mtSubForm.validationEngineOptions);
         });
     })(jQuery);
 </script>

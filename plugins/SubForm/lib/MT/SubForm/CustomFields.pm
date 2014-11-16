@@ -14,8 +14,8 @@ sub _common_field_html_param {
 
     # Including css, js?
     my $cache = MT::Request->instance->cache('sub_form') || {};
-    $tmpl_param->{sub_form_included} = $cache->{sub_form_included};
-    $cache->{sub_form_included} = 1;
+    $tmpl_param->{sub_form_head} = $cache->{sub_form_head};
+    $cache->{sub_form_head} = 1;
 
     MT::Request->instance->cache('sub_form', $cache);
 }
@@ -26,6 +26,8 @@ sub sub_form_html_params {
 
     if ( $tmpl_key eq 'field_html' ) {
         _common_field_html_param($tmpl_param);
+        $tmpl_param->{sub_form_lang} = MT->current_language;
+        $tmpl_param->{sub_form_lang} =~ s/_.+//;
         $tmpl_param->{schema_html} = $tmpl_param->{options};
     } elsif ( $tmpl_key eq 'options_field' ) {
         unless ( $tmpl_param->{id} ) {
