@@ -203,6 +203,9 @@
         translate: function(phrase) {
             return $.mtSubForm.i18n[phrase] || phrase;
         },
+        validationEngineOptions: {
+            promptPosition: 'centerRight'
+        },
         i18n: {},
         selectAssetUrlBase: ''
     };
