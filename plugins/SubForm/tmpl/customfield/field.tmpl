@@ -24,6 +24,9 @@
             margin-top: 8px;
         }
 
+        .icon-up { background-image: url(<mt:StaticWebPath>images/status_icons/up.gif); }
+        .icon-down { background-image: url(<mt:StaticWebPath>images/status_icons/download.gif); }
+
         .sub-form-mode-json .hidden-on-json { display: none; }
         .sub-form-mode-live .hidden-on-live { display: none; }
     </style>
@@ -51,8 +54,8 @@
         <textarea class="text high sub-form-values" name="<mt:var name="field_name" escape="html">" id="<mt:var name="field_id">"><mt:var name="field_value" escape="html" /></textarea>
         <div class="hint"><__trans phrase="To update values of SubForm, paste JSON and press SubForm to JSON."></div>
         <div class="sub-form-exchange actions-bar actions-bar-bottom line">
-            <a href="#" class="button sub-form-get-json"><__trans phrase="SubForm to JSON"></a>
-            <a href="#" class="button sub-form-set-json"><__trans phrase="JSON to SubForm"></a>
+        <a href="#" class="button sub-form-get-json"><span class="icon-left icon-up"><__trans phrase="SubForm to JSON"></span></a>
+            <a href="#" class="button sub-form-set-json"><span class="icon-left icon-down"><__trans phrase="JSON to SubForm"></span></a>
         </div>
 
         <h4><__trans phrase="SubForm"></h4>
