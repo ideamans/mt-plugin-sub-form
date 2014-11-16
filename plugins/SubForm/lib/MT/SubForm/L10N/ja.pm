@@ -47,6 +47,11 @@ use vars qw( %Lexicon );
 
 ## tmpl/customfield/field.tmpl
     'Show JSON' => 'JSONデータを表示',
+    'Hide JSON' => 'JSONデータを隠す',
+    'SubForm to JSON' => 'SubFormからJSONへ',
+    'JSON to SubForm' => 'JSONからSubFormへ',
+    'JSON Data' => 'JSONデータ',
+    'To update values of SubForm, paste JSON and press SubForm to JSON.' => 'JSONデータを貼り付けて、「SubFormからJSON」ボタンを押すと、SubFormの値を一括で更新できます。',
 
 ## tmpl/sub_form_with_json
     'Append' => '追加',

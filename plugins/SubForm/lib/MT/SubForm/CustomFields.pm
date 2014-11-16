@@ -14,8 +14,8 @@ sub _common_field_html_param {
 
     # Including css, js?
     my $cache = MT::Request->instance->cache('sub_form') || {};
-    $tmpl_param->{sub_form_included} = $cache->{sub_form_included};
-    $cache->{sub_form_included} = 1;
+    $tmpl_param->{sub_form_head} = $cache->{sub_form_head};
+    $cache->{sub_form_head} = 1;
 
     MT::Request->instance->cache('sub_form', $cache);
 }
