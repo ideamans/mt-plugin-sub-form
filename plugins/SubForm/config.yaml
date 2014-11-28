@@ -1,6 +1,6 @@
 id: SubForm
 name: SubForm
-version: 0.1.1
+version: 0.1.2
 schema_version: 0.01
 l10n_class: MT::SubForm::L10N
 description: <__trans phrase="Adds subform type customfield by casual HTML code.">
