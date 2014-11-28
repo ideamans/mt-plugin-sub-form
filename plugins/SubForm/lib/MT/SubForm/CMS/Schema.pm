@@ -33,7 +33,7 @@ sub edit {
 
     $param->{schema_head} ||= plugin->translate('_default_options_head');
     $param->{schema_html} ||= plugin->translate('_default_options_html');
-    $param->{template} = plugin->translate('_default_schema_template');
+    $param->{template} ||= plugin->translate('_default_schema_template');
 
     $param->{output} = File::Spec->catfile( plugin->{full_path},
         'tmpl', 'cms', 'edit_sub_form_schema.tmpl' );

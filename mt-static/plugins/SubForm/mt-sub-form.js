@@ -203,6 +203,9 @@
         translate: function(phrase) {
             return $.mtSubForm.i18n[phrase] || phrase;
         },
+        validationEngineOptions: {
+            promptPosition: 'centerRight'
+        },
         i18n: {},
         selectAssetUrlBase: ''
     };
@@ -211,48 +214,62 @@
         defaults: {
             valuesWrapperSelector: '.sub-form-values-wrapper',
             valuesSelector: '.sub-form-values',
-            formSelector: '.sub-form',
-            jsonShowerSelector: '.sub-form-json-shower'
+            formSelector: '.sub-form'
         },
         _init: function(options) {
             var opts = $.extend(this.defaults, $.mtSubForm.defaultOptions, options, $.mtSubForm.forceOptions),
                 subform = this,
                 $subform = $(this.element);
 
+            subform.jqContainer = $subform;
             subform.jqValuesWrapper = $subform.find(opts.valuesWrapperSelector);
             subform.jqValues = $subform.find(opts.valuesSelector);
             subform.jqForm = $subform.find(opts.formSelector);
-            subform.jqJsonShower = $subform.find(opts.jsonShowerSelector);
+
+            subform.jqControll = $subform.find('.sub-form-controll');
+            subform.jqShowJson = $subform.find('.sub-form-show-json');
+            subform.jqHideJson = $subform.find('.sub-form-hide-json');
+            subform.jqGetJson = $subform.find('.sub-form-get-json');
+            subform.jqSetJson = $subform.find('.sub-form-set-json');
+            subform.jqParentForm = $subform.closest('form');
 
             subform.setUp();
 
             var values = subform.parseValues(subform.jqValues.val());
             subform.setValues(values);
 
-            subform.jqJsonShower.click(function() {
-                subform.jqJsonShower.addClass('hidden');
-                subform.jqValuesWrapper.removeClass('hidden');
+            subform.jqShowJson.click(function() {
+                subform.setStatus('json')
                 return false;
             });
 
-            $subform.find('.get-values').click(function() {
+            subform.jqHideJson.click(function() {
+                subform.setStatus('live')
+                return false;
+            });
+
+            subform.jqGetJson.click(function() {
                 subform.formToJson();
                 return false;
             });
 
-            $subform.find('.set-values').click(function() {
+            subform.jqSetJson.click(function() {
                 subform.jsonToForm();
                 return false;
             });
 
-            $subform.closest('form').submit(function() {
+            subform.jqParentForm.submit(function() {
                 subform.formToJson();
                 subform.tearDown();
                 return true;
             });
-
-            subform.jqValuesWrapper.addClass('hidden');
-            subform.jqJsonShower.removeClass('hidden');
+        },
+        setStatus: function(status) {
+            if ( status == 'json' ) {
+                this.jqContainer.removeClass('sub-form-mode-live').addClass('sub-form-mode-json');
+            } else { // stauts == 'live'
+                this.jqContainer.addClass('sub-form-mode-live').removeClass('sub-form-mode-json');
+            }
         },
         formToJson: function() {
             var subform = this;

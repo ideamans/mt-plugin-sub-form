@@ -1,0 +1,11 @@
+{
+  "name": "mt-plugin-sub-form",
+  "version": "0.1.1",
+  "authors": [
+    "Kunihiko Miyanaga <miyanaga@gmail.com>"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "jQuery-Validation-Engine": "~2.6.4"
+  }
+}

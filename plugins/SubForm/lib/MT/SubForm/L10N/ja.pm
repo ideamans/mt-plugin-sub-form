@@ -47,6 +47,11 @@ use vars qw( %Lexicon );
 
 ## tmpl/customfield/field.tmpl
     'Show JSON' => 'JSONデータを表示',
+    'Hide JSON' => 'JSONデータを隠す',
+    'SubForm to JSON' => 'SubFormからJSONへ',
+    'JSON to SubForm' => 'JSONからSubFormへ',
+    'JSON Data' => 'JSONデータ',
+    'To update values of SubForm, paste JSON and press SubForm to JSON.' => 'JSONデータを貼り付けて、「SubFormからJSON」ボタンを押すと、SubFormの値を一括で更新できます。',
 
 ## tmpl/sub_form_with_json
     'Append' => '追加',
@@ -63,6 +68,11 @@ use vars qw( %Lexicon );
     'Create SubForm Schema' => 'SubFormスキーマの作成',
     'Schema HTML Head' => 'スキーマHTMLヘッダ',
     'Schema HTML' => 'スキーマHTML',
+    'HTML only once includeding for each SubForm schema. Use to define JavaScript or CSS.'
+        => 'ひとつのSubFormスキーマにつき、1回だけ読み込まれるHTMLです。JavaScriptやCSSの定義に利用します。',
+    'HTML to render SubForm. You can use input, select or textarea element with name attribute.'
+        => 'SubFormを表示するためのHTMLです。name属性を指定したinput、select、textareaなどの要素を利用できます。',
+
     'Save changes to this schema (s)' => 'このスキーマを保存する',
     'Preview this scheama (p)' => 'このスキーマをプレビューする',
     'This is not required. Template to build SubForm data with mt:SubFormBuild tag.' => '任意項目です。mt:SubFormBuildテンプレートタグでこのSubFormに入力されたデータを再構築するテンプレートです。',

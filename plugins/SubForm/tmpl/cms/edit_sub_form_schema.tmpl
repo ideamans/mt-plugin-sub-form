@@ -64,14 +64,18 @@
     <mtapp:setting
        id="schema_head"
        label_class="top-label"
-       label="<__trans phrase="Schema HTML Head">">
+       label="<__trans phrase="Schema HTML Head">"
+       show_hint="1"
+       hint="<__trans phrase='HTML only once includeding for each SubForm schema. Use to define JavaScript or CSS.'>">
        <textarea name="schema_head" id="schema_head" class="text high full" rows="5"><mt:var name="schema_head" escape="html"></textarea>
     </mtapp:setting>
 
     <mtapp:setting
        id="schema_html"
        label_class="top-label"
-       label="<__trans phrase="Schema HTML">">
+       label="<__trans phrase="Schema HTML">"
+       show_hint="1"
+       hint="<__trans phrase='HTML to render SubForm. You can use input, select or textarea element with name attribute.'>">
          <textarea name="schema_html" id="schema_html" class="text high full" rows="5"><mt:var name="schema_html" escape="html"></textarea>
     </mtapp:setting>
 
