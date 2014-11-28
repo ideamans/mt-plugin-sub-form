@@ -12,6 +12,9 @@ sub _common_field_html_param {
     $tmpl_param->{debug_mode} = $MT::DebugMode;
     $tmpl_param->{build_error} = undef;
 
+    $tmpl_param->{sub_form_lang} = MT->current_language;
+    $tmpl_param->{sub_form_lang} =~ s/_.+//;
+
     # Including css, js?
     my $cache = MT::Request->instance->cache('sub_form') || {};
     $tmpl_param->{sub_form_head} = $cache->{sub_form_head};
@@ -26,9 +29,9 @@ sub sub_form_html_params {
 
     if ( $tmpl_key eq 'field_html' ) {
         _common_field_html_param($tmpl_param);
-        $tmpl_param->{sub_form_lang} = MT->current_language;
-        $tmpl_param->{sub_form_lang} =~ s/_.+//;
-        $tmpl_param->{schema_html} = $tmpl_param->{options};
+        my $schema = MT->model('sub_form_schema')->new;
+        $schema->schema_html($tmpl_param->{options});
+        $tmpl_param->{built_schema_html} = $schema->build_schema_html;
     } elsif ( $tmpl_key eq 'options_field' ) {
         unless ( $tmpl_param->{id} ) {
             $tmpl_param->{options} = plugin->translate("_default_options_html");
@@ -52,6 +55,12 @@ sub sub_form_schema_params {
     if ( $tmpl_key eq 'field_html' ) {
         _common_field_html_param($tmpl_param);
         if ( my $schema = MT->model('sub_form_schema')->load($tmpl_param->{options} || 0) ) {
+            my $id = $schema->id;
+
+            my $cache = MT::Request->instance->cache('sub_form') || {};
+            $tmpl_param->{schema_head_included} = $cache->{"schema_head_included_$id"};
+            $cache->{"schema_head_included_$id"} = 1;
+
             $tmpl_param->{built_schema_head} = $schema->build_schema_head;
             $tmpl_param->{build_error} = $schema->errstr
                 unless defined $tmpl_param->{built_schema_head};

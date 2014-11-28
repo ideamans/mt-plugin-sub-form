@@ -55,7 +55,7 @@
 
     <div class="sub-form-values-wrapper hidden-on-live">
         <h4><__trans phrase="JSON Data"></h4>
-        <textarea class="text high sub-form-values" name="<mt:var name="field_name" escape="html">" id="<mt:var name="field_id">"><mt:var name="field_value" escape="html" /></textarea>
+        <textarea class="text high sub-form-values" name="<mt:var name="field_name" escape="html">" id="<mt:var name="field_id">"><mt:var name="field_value" escape="html" _default="{}" /></textarea>
         <div class="hint"><__trans phrase="To update values of SubForm, paste JSON and press SubForm to JSON."></div>
         <div class="sub-form-exchange actions-bar actions-bar-bottom line">
         <a href="#" class="button sub-form-get-json"><span class="icon-left icon-up"><__trans phrase="SubForm to JSON"></span></a>
@@ -65,9 +65,11 @@
         <h4><__trans phrase="SubForm"></h4>
     </div>
 
-    <div class="sub-head" id="<mt:var name="field_id">-sub-form-head">
-    <mt:var name="built_schema_head" />
-    </div>
+    <mt:unless name="schema_head_included">
+        <div class="sub-form-head" id="<mt:var name="field_id">-sub-form-head">
+        <mt:var name="built_schema_head" />
+        </div>
+    </mt:unless>
 
     <div class="sub-form validationEngineContainer" id="<mt:var name="field_id">-sub-form">
     <mt:var name="built_schema_html" />

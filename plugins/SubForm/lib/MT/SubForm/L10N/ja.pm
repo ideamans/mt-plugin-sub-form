@@ -68,6 +68,11 @@ use vars qw( %Lexicon );
     'Create SubForm Schema' => 'SubFormスキーマの作成',
     'Schema HTML Head' => 'スキーマHTMLヘッダ',
     'Schema HTML' => 'スキーマHTML',
+    'HTML only once includeding for each SubForm schema. Use to define JavaScript or CSS.'
+        => 'ひとつのSubFormスキーマにつき、1回だけ読み込まれるHTMLです。JavaScriptやCSSの定義に利用します。',
+    'HTML to render SubForm. You can use input, select or textarea element with name attribute.'
+        => 'SubFormを表示するためのHTMLです。name属性を指定したinput、select、textareaなどの要素を利用できます。',
+
     'Save changes to this schema (s)' => 'このスキーマを保存する',
     'Preview this scheama (p)' => 'このスキーマをプレビューする',
     'This is not required. Template to build SubForm data with mt:SubFormBuild tag.' => '任意項目です。mt:SubFormBuildテンプレートタグでこのSubFormに入力されたデータを再構築するテンプレートです。',
