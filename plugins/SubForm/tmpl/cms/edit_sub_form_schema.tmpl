@@ -6,7 +6,7 @@
 
 <$mt:setvar name="position_actions_bottom" value="1"$>
 
-<mt:SetVarBlock name="system_msg">
+<mt:SetVarBlock name="system_msg" append="1">
 <mt:if name="error">
   <mtapp:statusmsg
      id="generic-error"
@@ -25,9 +25,51 @@
 </mt:SetVarBlock>
 
 <mt:setvarblock name="jq_js_include" append="1">
+(function($) {
+    $.each(['#template', '#schema_html'], function(i,id) {
+        var options = jQuery(id).attr('mt:editor-options');
+        var editor_params = {
+            lineNumbers: true,
+            lineWrapping: false,
+            tabMode: "default",
+            indentUnit: 0,
+            pollForIME: true,
+            mode: "text/html"
+        };
+        if (options.match('lang:css')) {
+            editor_params['mode'] = 'text/css';
+        } else if (options.match('lang:javascript')) {
+            editor_params['mode'] = 'text/javascript';
+        }
+
+        var editor = CodeMirror.fromTextArea(jQuery(id).get(0), editor_params);
+
+        var syncEditor = function() {
+            var wrapper = editor.getWrapperElement();
+            if ( jQuery(wrapper).css('display') == 'none') {
+                editor.setValue(jQuery(id).val());
+            } else {
+                jQuery(id).val(editor.getValue());
+            }
+        };
+
+        $('button.save').click(function() {
+            syncEditor();
+        });
+    });
+})(jQuery);
 </mt:setvarblock>
 
 <mt:setvarblock name="html_head" append="1">
+<script type="text/javascript" src="<$mt:var name="static_uri"$>codemirror/lib/codemirror.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<link rel="stylesheet" href="<$mt:var name="static_uri"$>codemirror/lib/codemirror.css">
+
+<script type="text/javascript" src="<$mt:var name="static_uri"$>codemirror/mt/xml.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>codemirror/mt/javascript.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>codemirror/mt/css.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<script type="text/javascript" src="<$mt:var name="static_uri"$>codemirror/mt/htmlmixed.js?v=<mt:var name="mt_version_id" escape="URL">"></script>
+<link rel="stylesheet" href="<$mt:var name="static_uri"$>codemirror/mt/mt.css">
+
 <mt:include name="cms/sub_form_html_head.tmpl" component="SubForm">
 <style type="text/css">
 </style>
@@ -76,7 +118,7 @@
        label="<__trans phrase="Schema HTML">"
        show_hint="1"
        hint="<__trans phrase='HTML to render SubForm. You can use input, select or textarea element with name attribute.'>">
-         <textarea name="schema_html" id="schema_html" class="text high full" rows="5"><mt:var name="schema_html" escape="html"></textarea>
+         <textarea name="template" id="schema_html" class="text high full monospace" spellcheck="false" mt:watch-change="1" mt:editor="codemirror" mt:editor-options="lang:css autocomplete:off" rows="5"><mt:var name="schema_html" escape="html"></textarea>
     </mtapp:setting>
 
     <mtapp:setting
@@ -92,7 +134,7 @@
        label="<__trans phrase="Template">"
        show_hint="1"
        hint="<__trans phrase="This is not required. Template to build SubForm data with mt:SubFormBuild tag.">">
-         <textarea name="template" id="template" class="text high full" rows="5"><mt:var name="template" escape="html"></textarea>
+         <textarea name="template" id="template" class="text high full monospace" spellcheck="false" mt:watch-change="1" mt:editor="codemirror" mt:editor-options="lang:css autocomplete:off" rows="5"><mt:var name="template" escape="html"></textarea>
     </mtapp:setting>
 
   </mtapp:settinggroup>
