@@ -1,2 +1,15 @@
 <link rel="stylesheet" href="<$MTStaticWebPath$>plugins/SubForm/mt-sub-form.css?v=<mt:var name='plugin_version'>" type="text/css" />
 <script type="text/javascript" src="<$MTStaticWebPath$>plugins/SubForm/mt-sub-form.js?v=<mt:var name='plugin_version'>"></script>
+
+<script type="text/javascript">
+    (function($) {
+        $.mtSubForm.i18n = $.extend($.mtSubForm.i18n, {
+            'Select': '<__trans phrase="Select">',
+            'Remove': '<__trans phrase="Remove">'
+        });
+
+        $.mtSubForm.selectAssetUrlBase = "<mt:var name="script_url">?__mode=list_asset&amp;_type=asset&amp;blog_id=<mt:var name="blog_id">&amp;dialog_view=1&amp;asset_select=1";
+
+    })(jQuery);
+</script>
+
