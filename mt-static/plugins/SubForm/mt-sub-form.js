@@ -51,7 +51,7 @@
             var defaults = {
                 wrapper: $wrapper,
                 previewUrl: $button.attr('data-preview-uri'),
-                head: $wrapper.find('.preview-head'),
+                // head: $wrapper.find('.preview-head'),
                 form: $wrapper.find('.preview-form'),
                 formWrapper: $wrapper.find('.preview-form-wrapper'),
                 indicator: $wrapper.find('.preview-indicator'),
@@ -67,7 +67,6 @@
         },
         previewer: function(opts) {
             var $form = opts.form,
-                $head = opts.head,
                 $formWrapper = opts.formWrapper,
                 $indicator = opts.indicator,
                 $error = opts.error,
@@ -75,7 +74,6 @@
 
             var updatePreview = function() {
                 $form.children().remove();
-                $head.children().remove();
                 $formWrapper.hide();
                 $error.hide();
                 $indicator.fadeIn('fast');
@@ -88,9 +86,9 @@
                             $error.show().find('p.msg-text').text(data.error);
                         } else if ( data.result && data.result ) {
                             try {
-                              $head.html(data.result.built_schema_head);
                               $form.html(data.result.built_schema_html);
                               $formWrapper.fadeIn('fast');
+                              $form.subForm();
                             } catch (ex) {
                               if ( console ) console.log(ex);
                               $error.show().find('p.msg-text').text(ex.message);
@@ -106,7 +104,6 @@
             };
 
             $button.click(updatePreview);
-            updatePreview();
         },
         setAsset: function(sub_form_id, html) {
             var $preview = $('div.sub-form-preview[sub-form-id="' + sub_form_id + '"]'),
@@ -162,6 +159,8 @@
                             .attr('href', url)
                             .addClass('mt-open-dialog sub-form-select')
                             .text($.mtSubForm.translate('Select'))
+                            .appendTo($buttons);
+                        var $spacer = $('<span> </span>')
                             .appendTo($buttons);
                         var $cancel = $('<a />')
                             .attr('href', '#')

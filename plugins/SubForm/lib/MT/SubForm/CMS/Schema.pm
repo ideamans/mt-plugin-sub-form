@@ -29,11 +29,20 @@ sub edit {
         },
     );
 
+    $param->{list_uri} = $app->uri(
+        mode => 'list',
+        args => {
+            _type => 'sub_form_schema',
+            $blog_id ? ( blog_id => $blog_id ) : (),
+        },
+    );
+
     $app->setup_editor_param($param);
 
     $param->{schema_head} ||= plugin->translate('_default_options_head');
     $param->{schema_html} ||= plugin->translate('_default_options_html');
     $param->{template} ||= plugin->translate('_default_schema_template');
+
 
     $param->{output} = File::Spec->catfile( plugin->{full_path},
         'tmpl', 'cms', 'edit_sub_form_schema.tmpl' );
@@ -46,21 +55,15 @@ sub preview {
 
     my $schema = MT->model('sub_form_schema')->new;
     $schema->set_values({
-        schema_head     => $app->param('schema_head'),
         schema_html     => $app->param('schema_html'),
     });
 
     if ( $schema->validate ) {
-        my $built_schema_head = $schema->build_schema_head;
-        return $app->json_error($schema->errstr) unless defined $built_schema_head;
-
         my $built_schema_html = $schema->build_schema_html;
         return $app->json_error($schema->errstr) unless defined $built_schema_html;
 
         $app->json_result({
-            schema_head => $schema->schema_head,
             schema_html => $schema->schema_html,
-            built_schema_head => $built_schema_head,
             built_schema_html => $built_schema_html,
         });
     } else {

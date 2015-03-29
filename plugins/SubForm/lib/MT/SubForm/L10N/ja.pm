@@ -66,6 +66,7 @@ use vars qw( %Lexicon );
 ## tmpl/cms/edit_sub_form_schema.tmpl
     'Edit SubForm Schema' => 'SubFormスキーマの編集',
     'Create SubForm Schema' => 'SubFormスキーマの作成',
+    'Manage SubForm Schemas' => 'SubFormスキーマ一覧',
     'Schema HTML Head' => 'スキーマHTMLヘッダ',
     'Schema HTML' => 'スキーマHTML',
     'HTML only once includeding for each SubForm schema. Use to define JavaScript or CSS.'

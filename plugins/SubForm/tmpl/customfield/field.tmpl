@@ -5,18 +5,6 @@
     <script src="<mt:StaticWebPath>plugins/SubForm/vendor/jQuery-Validation-Engine/js/jquery.validationEngine.js"></script>
     <script src="<mt:StaticWebPath>plugins/SubForm/vendor/jQuery-Validation-Engine/js/languages/jquery.validationEngine-<mt:var name='sub_form_lang'>.js"></script>
 
-    <script type="text/javascript">
-        (function($) {
-            $.mtSubForm.i18n = $.extend($.mtSubForm.i18n, {
-                'Select': '<__trans phrase="Select">',
-                'Remove': '<__trans phrase="Remove">'
-            });
-
-            $.mtSubForm.selectAssetUrlBase = "<mt:var name="script_url">?__mode=list_asset&amp;_type=asset&amp;blog_id=<mt:var name="blog_id">&amp;dialog_view=1&amp;asset_select=1";
-
-        })(jQuery);
-    </script>
-
     <style type="text/css">
         .sub-form-controll {
             position: relative;

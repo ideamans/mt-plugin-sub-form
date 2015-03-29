@@ -154,6 +154,43 @@ EOH
     test_template(%args);
 }
 
+sub template_schema_vars {
+    my %args;
+
+    $args{schema} = MT->model('sub_form_schema')->new;
+    $args{schema}->template(<<'EOT');
+<mt:SubForm vars="sf" vars_glue=":">
+    text: <mt:var name="sf_text">
+    single_value: <mt:var name="sf_single_value">
+    single_label: <mt:var name="sf_single_label">
+    multiple_loop: <mt:loop name="sf_multiple_loop">[<mt:var name="value">=><mt:var name="label">]</mt:loop>
+    multiple_value: <mt:var name="sf_multiple_value">
+    multiple_label: <mt:var name="sf_multiple_label">
+</mt:SubForm>
+EOT
+
+    $args{template} = <<'EOT';
+<mt:SubFormBuild>
+EOT
+
+    $args{data} = {
+        text => [ { value => 'TEXT1' } ],
+        multiple => [ { value => '1', label => 'OPTION1' }, { value => '2', label => 'OPTION2' } ],
+        single => [ { value => '3', label => 'OPTION3' } ],
+    };
+
+    $args{expect} = <<'EOH';
+    text: TEXT1
+    single_value: 3
+    single_label: OPTION3
+    multiple_loop: [1=>OPTION1][2=>OPTION2]
+    multiple_value: 1:2
+    multiple_label: OPTION1:OPTION2
+EOH
+
+    test_template(%args);
+}
+
 sub main {
     my $mt = MT->instance;
     my $class = shift;
@@ -163,6 +200,7 @@ sub main {
     uses;
     template_basic;
     template_schema;
+    template_schema_vars;
 }
 
 __PACKAGE__->main() unless caller;

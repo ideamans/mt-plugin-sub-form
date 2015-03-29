@@ -159,6 +159,31 @@ sub hdlr_SubForm {
     defined( $data = _require_context_data(@_) ) || return;
     local $ctx->{__stash}->{sub_form_data} = $data;
 
+    my %vars;
+    if ( defined $args->{vars} ) {
+        my $prefix = $args->{vars};
+        if ( $prefix ne '0' ) {
+            $prefix = 'subform' if $prefix eq '1';
+            $prefix .= '_' if $prefix ne '';
+
+            my $glue = $args->{vars_glue};
+            $glue = ',' unless defined $glue;
+
+            foreach my $key ( %$data ) {
+                my $values = $data->{$key} || next;
+                my $var = $prefix . $key;
+                foreach my $attr ( qw(value label) ) {
+                    my $val = join($glue, map { ref $_ eq 'HASH' ? ( defined $_->{$attr} ? $_->{$attr} : '' ) : '' } @$values );
+                    $vars{$var . '_' . $attr} = $val if defined $val;
+                }
+
+                $vars{$var} = $vars{$var . '_value'} if defined $vars{$var . '_value'};
+                $vars{$var . '_loop'} = $values;
+            }
+        }
+    }
+    local @{ $ctx->{__stash}->{vars} }{ keys %vars } = values %vars;
+
     my $builder = $ctx->stash('builder');
     my $tokens = $ctx->stash('tokens');
     defined( my $partial = $builder->build($ctx, $tokens, $cond) ) || return;
