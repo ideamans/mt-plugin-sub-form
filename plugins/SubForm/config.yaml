@@ -1,6 +1,6 @@
 id: SubForm
 name: SubForm
-version: 0.1.4
+version: 0.1.5
 schema_version: 0.01
 l10n_class: MT::SubForm::L10N
 description: <__trans phrase="Adds subform type customfield by casual HTML code.">
@@ -50,19 +50,19 @@ applications:
             cms_save_filter.sub_form_schema: $SubForm::MT::SubForm::CMS::Schema::save_filter
             cms_pre_save.sub_form_schema: $SubForm::MT::SubForm::CMS::Schema::pre_save
         menus:
-                custom_fields:sub_form_schema:
-                    label: SubForm Schema
-                    order: 3000
-                    mode: list
-                    args:
-                        _type: sub_form_schema
-                    permit_action:
-                        permit_action: edit_custom_fields
-                        at_least_one: 1
-                    view:
-                        - system
-                        - website
-                        - blog
+            custom_fields:sub_form_schema:
+                label: SubForm Schema
+                order: 3000
+                mode: list
+                args:
+                    _type: sub_form_schema
+                permit_action:
+                    permit_action: edit_custom_fields
+                    at_least_one: 1
+                view:
+                    - system
+                    - website
+                    - blog
 
 tags:
     block:
