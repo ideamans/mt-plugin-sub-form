@@ -17,6 +17,11 @@ sub asset_insert_param {
     return 1 unless $block;
 
     my $ctx = $tmpl->context;
+
+    if ( my $assets = $ctx->stash('assets') ) {
+        $ctx->stash('asset', $assets->[0]) if ref $assets eq 'ARRAY' && @$assets && $assets->[0];
+    }
+
     if ( my $asset = $ctx->stash('asset') ) {
         $param->{edit_field_value} = $asset->enclose($param->{upload_html});
         $block->innerHTML(

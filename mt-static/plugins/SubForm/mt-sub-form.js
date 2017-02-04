@@ -163,7 +163,7 @@
                         var $spacer = $('<span> </span>')
                             .appendTo($buttons);
                         var $cancel = $('<a />')
-                            .attr('href', '#')
+                            .attr('href', 'javascript:void(0)')
                             .attr('sub-form-id', sub_form_id)
                             .addClass('hidden sub-form-remover')
                             .text($.mtSubForm.translate('Remove'))
